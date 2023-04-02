@@ -1,0 +1,298 @@
+
+
+.table__feature-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background-color: white;
+}
+
+.table__feature-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.table__refresh-icon {
+	background: url('../../assets/icon/Sprites.64af8f61.svg') no-repeat -1098px -90px;
+    width: 20px;
+	height: 21px;
+}
+
+.table__excel-icon {
+	background: url('../../assets/icon/Sprites.64af8f61.svg') no-repeat -1265px -90px;
+	width: 23px;
+	height: 20px;
+}
+
+.table__setting-icon  {
+	background: url('../../assets/icon/Sprites.64af8f61.svg') no-repeat -676px -30px;
+	width: 23px;
+	height: 24px;
+}
+
+
+
+.table-content-wrapper {
+    overflow: auto;
+    height: 100%;
+    background-color: white;
+
+}
+
+.table-content {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table-content__header {
+    background-color: #eceef1;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.table-content__header th {
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.table-content__body {
+    min-height: 1290px;
+}
+
+/* .table-content__body tr:has(input[type="checkbox"]:checked) {
+    background-color: #E5F3FF;
+} */
+
+.table-content__body tr:hover td{
+    background-color: #F2F9FF;
+}
+
+.table-content__body tr {
+    white-space: nowrap;
+    font-family: Roboto Regular;
+    font-weight: 400;
+}
+
+
+
+.table-content__body td:not(:last-child), .table-content__header th:not(:last-child){
+    padding: 0 16px;
+    border-bottom: 1px solid #c7c7c7;
+    border-right: 1px solid #c7c7c7;
+}
+
+.table-content__body td:last-child, .table-content__header th:last-child{
+    padding: 0 16px;
+    border-left: 1px solid #c7c7c7;
+    border-bottom: 1px solid #c7c7c7;
+}
+
+.table-content__body tr, .table-content__header tr{
+    height: 48px;
+}
+
+
+
+#table__header-id {
+    width: 150px;
+}
+
+#table__header-name {
+    width: 200px;
+}
+
+#table__header-sex {
+    width: 100px;
+}
+
+#table__header-dob {
+    width: 200px;
+}
+
+#table__header-cmnd {
+    width: 180px;
+}
+
+#table__header-title {
+    width: 150px;
+}
+
+#table__header-unit {
+    width: 300px;
+}
+
+
+#table__header-account {
+    width: 150px;
+}
+
+#table__header-bankname {
+    width: 150px;
+}
+
+#table__header-bankbranch {
+    width: 300px;
+}
+
+#table__header-feature {
+    width: 150px;
+}
+
+.align--center {
+    text-align: center;
+}
+
+.align--left {
+    text-align: left;
+}
+
+.align--right {
+    text-align: right;
+}
+
+.table-content__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    position: sticky;
+    left: 0;
+    bottom: 0;
+    padding: 0 16px;
+    height: 56px;
+    z-index: 2;
+}
+
+.table-content-pagination-container {
+    display: flex; 
+    gap: 60px
+}
+
+
+
+.table-content-wrapper::-webkit-scrollbar {
+	width: 10px;
+    height: 10px;
+}
+
+/* Track */
+.table-content-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+.table-content-wrapper::-webkit-scrollbar-thumb {
+	background: #b8bcc3;
+}
+
+.table__feature-cell {
+    color: #0075c0;
+    position: sticky;
+    right: 0;
+    background-color: white;
+    z-index: 1;
+    overflow: visible;
+}
+
+.table__feature-cell #triangle-dropdown {
+    width: 0; 
+    height: 0; 
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #0075c0;
+    transform: translateY(-50%);
+    margin-left: 5px;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+}
+
+.table__feature-cell #edit-text {
+    cursor: pointer;
+}
+
+.table__feature-cell #edit-text:active, 
+.table__feature-cell #triangle-dropdown:active{
+    outline: 1px solid #0075c0;
+}
+
+.table-feature-list-container {
+    position: absolute;
+    z-index: 2;
+    white-space: nowrap;
+}
+
+.table-feature-list {
+    background-color: white;
+    position: sticky;
+    color: black;
+    border: 1px solid #babec5;
+}
+
+.table-feature-list div {
+    padding: 5px;
+    transition: .25s;
+
+}
+
+.table-feature-list div:hover {
+    background-color: #eceef1;
+    color: #2ca01c;
+    cursor: pointer;
+}
+
+
+
+#table__header-checkbox {
+    position: sticky;
+    left: 0;
+    background-color: #eceef1;
+}
+
+#table__header-feature {
+    position: sticky;
+    right: 0;
+    background-color: #eceef1;
+}
+
+.table__checkbox-cell {
+    position: sticky;
+    left: 0;
+    background-color: white;
+    z-index: 1;
+}
+
+.row--checked {
+    background-color: #E5F3FF;
+}
+
+
+.row--checked .table__feature-cell, .row--checked .table__checkbox-cell{
+    background-color: #E5F3FF;
+}
+
+
+.table__feature-delete-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.table__feature-delete-container .drop-all {
+    color: #E72C2C;
+    cursor: pointer;
+}
+
+.table__feature-delete-container .select-all {
+    color: #1565C0;
+    cursor: pointer;
+}
+
+
+

@@ -1,30 +1,36 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view />
+  <div v-if="loading" class="loading__layout">
+    <img src="./assets/loading.svg" />
+  </div>
+  <div class="toast-container">
+    <div v-for="(item, index) in toasts" :key="index">
+      <BaseToast :text="item.text" :type="item.type" />
+    </div>
+  </div>
+  <div class="layout">
+    <TheSidebar />
+
+    <div class="content-container">
+      <TheNavbar />
+      <div class="main-content">
+        <router-view></router-view>
+      </div>
+    </div>
+  </div>
 </template>
 
+<script>
+import { mapState } from "vuex";
+import TheNavbar from "./components/layout/TheNavbar.vue";
+import TheSidebar from "./components/layout/TheSidebar.vue";
+
+export default {
+  components: { TheSidebar, TheNavbar },
+
+  computed: mapState(["loading", "toasts"]),
+};
+</script>
+
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-nav {
-  padding: 30px;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
+@import url("./css/main.css");
 </style>

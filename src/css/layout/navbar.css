@@ -1,0 +1,76 @@
+.navbar {
+    display: flex;
+    background-color: white;
+    width: 100%;
+    box-shadow: 0px 0px 3px rgba(1,22,30,0.16);
+    height: 56px;
+    padding: 0 20px;
+    justify-content: space-between;
+}
+
+.navbar--left {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    font-weight: 700;
+    font-family: Roboto Bold;
+    gap: 20px;
+}
+
+.navbar__menu-icon {
+	background: url('../../assets/icon/Sprites.64af8f61.svg') no-repeat -847px -35px;
+	width: 16px;
+	height: 14px;
+}
+
+.navbar--right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+
+}
+
+.navbar__feature-icons {
+    width: 24px;
+    height: 24px;
+}
+
+.navbar__setting-icon {
+	background: url('../../assets/icon/Sprites.64af8f61.svg') no-repeat -676px -30px;
+	width: 23px;
+	height: 24px;
+}
+
+.navbar__info-icon {
+	background: url('../../assets/icon/Sprites.64af8f61.svg') no-repeat -732px -31px;
+	width: 22px;
+	height: 22px;
+}
+
+.navbar__chat-icon {
+	background: url('../../assets/icon/Sprites.64af8f61.svg') no-repeat -899px -30px;
+	width: 24px;
+	height: 25px;
+}
+
+.navbar__bell-icon {
+	background: url("../../assets/icon/Sprites.64af8f61.svg") no-repeat -788px -30px;
+	width: 24px;
+	height: 24px;
+}
+
+.navbar__user-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-image: url("../../assets/img/avatar.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
