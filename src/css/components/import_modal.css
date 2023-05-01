@@ -1,0 +1,123 @@
+.import-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+/* .import-modal__header {
+    padding: 16px 16px 12px 16px;
+} */
+
+.import-modal__header--top {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px 16px 12px 16px;
+}
+
+.import-modal__header__title {
+    font-weight: 700;
+    font-size: 24px;
+    color: #111;
+    margin: 0;
+}
+
+.import-modal__stepper {
+    padding: 8px 44px 16px;
+}
+
+.step {
+    width: 32px;
+    height: 32px;
+    border: 2px solid #afafaf;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #afafaf;
+    background: #f6f8fb;
+    font-size: 18px;
+}
+
+.import-modal__body {
+    padding: 16px 26px;
+    display: flex;
+
+}
+
+
+.import-modal__body--left {
+    width: 50%;
+}
+
+
+.file-input-title > span{
+    margin-left: 15px;
+    color: #757575;
+    white-space: nowrap;
+}
+
+.input-file-box {
+    background: #fff;
+    padding: 12px 20px;
+    box-sizing: border-box;
+    border-radius: 2px;
+    position: relative;
+    border: 1px solid var(--upload-border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    min-height: 48px;
+    width: 50%;
+    border: 1px solid black;
+}
+
+.input-file-box__placeholder {
+    position: absolute;
+    inset: 0;
+
+}
+
+.input-file-box--hint {
+    min-width: 264px;
+    display: block;
+    text-align: center;
+    margin: 0!important;
+    padding: 0!important;
+    width: 100%;
+    color: #9e9e9e;
+    font-style: italic;
+}
+
+.import-modal__body__input-info {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.import-modal__body__input-info > div {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 0;
+}
+
+.import-modal__body__input-info > div > label {
+    font-weight: bold;
+}
+
+.import-modal__footer {
+    height: 42px;
+    padding: 0 16px;
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    background-color: green;
+    align-items: center;
+}
+
+.import-modal__footer .button {
+    width: auto;
+}

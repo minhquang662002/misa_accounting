@@ -1,7 +1,7 @@
 <template>
   <div class="user-dialog__footer popup-footer">
     <div @click="closeForm">
-      <BaseButton text="Hủy" type="secondary" tabindex="19" />
+      <BaseButton :text="$t('words.cancel')" type="secondary" tabindex="21" />
     </div>
 
     <div class="popup-footer__btn-group">
@@ -11,8 +11,22 @@
             ? updateEmployeeAndClose()
             : createNewEmployeeAndClose()
         "
+        v-actionOnKeyPress="{
+          fn:
+            mode === ACCOUNTING_ENUM.MODE.UPDATE
+              ? updateEmployeeAndClose
+              : createNewEmployeeAndClose,
+          isCtrl: true,
+          isShift: false,
+          key: 83,
+        }"
       >
-        <BaseButton text="Cất" type="secondary" tabindex="20" />
+        <BaseButton
+          :text="$t('words.store')"
+          type="secondary"
+          tabindex="19"
+          :tooltipText="`${$t('words.store')} (Ctrl + S)`"
+        />
       </div>
       <div
         @click="
@@ -20,8 +34,22 @@
             ? updateEmployeeAndContinue()
             : createNewEmployeeAndContinue()
         "
+        v-actionOnKeyPress="{
+          fn:
+            mode === ACCOUNTING_ENUM.MODE.UPDATE
+              ? updateEmployeeAndContinue
+              : createNewEmployeeAndContinue,
+          isCtrl: true,
+          isShift: true,
+          key: 83,
+        }"
       >
-        <BaseButton text="Cất và thêm" type="primary" tabindex="21" />
+        <BaseButton
+          :text="$t('words.storeAndAdd')"
+          type="primary"
+          tabindex="20"
+          :tooltipText="`${$t('words.storeAndAdd')} (Ctrl + Shift + S)`"
+        />
       </div>
     </div>
   </div>

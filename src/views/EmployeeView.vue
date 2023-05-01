@@ -1,6 +1,6 @@
 <template>
   <div class="main-content__header">
-    <p class="main-content__title">Nhân viên</p>
+    <p class="main-content__title">{{ $t("words.employee") }}</p>
   </div>
   <EmployeeForm
     v-if="isFormOpen"
@@ -12,8 +12,10 @@
   <EmployeeTable
     :page="page"
     :rowsPerPage="rowsPerPage"
-    :employeeList="displayedRows"
-    :records="`${employeeList.values.length}`"
+    :employeeList="employeeList.values"
+    :records="total"
+    :keyword="keyword"
+    :filters="filters"
     @prevPage="page -= 1"
     @nextPage="page += 1"
     @refreshTable="refreshTable"
@@ -21,6 +23,11 @@
     @showEmployeeForm="showEmployeeForm($event)"
     @changeRowsPerPage="changeRowsPerPage($event)"
     @deleteSelectedRows="deleteSelectedRows($event)"
+    @setPage="setPage($event)"
+    @updateSearch="updateSearch($event)"
+    @updateFilter="updateFilter($event)"
+    @removeAllFilter="removeAllFilter"
+    @removeFilter="removeFilter($event)"
   />
 </template>
 <script>
@@ -28,12 +35,13 @@
 import EmployeeTable from "../components/employee/table/EmployeeTable.vue";
 import EmployeeForm from "@/components/employee/form/EmployeeForm.vue";
 import { ref, onMounted, watch } from "vue";
+import { getGeneratedCode } from "@/helpers/api";
 import store from "@/store";
 import {
-  getAllEmployees,
   deleteEmployee as deleteEmployeeById,
+  getFilterEmployees,
 } from "@/helpers/api";
-import { ACCOUNTING_TEXT } from "@/helpers/resources";
+import { ACCOUNTING_TEXT, ACCOUNTING_ENUM } from "@/helpers/resources";
 import { showToast } from "@/helpers/constants";
 
 //#endregion
@@ -48,9 +56,12 @@ export default {
     const isFormOpen = ref(false);
     const formDetail = ref(null);
     const employeeList = ref([]);
+    const total = ref(0);
     const page = ref(1);
-    const rowsPerPage = ref(10);
-    const displayedRows = ref([]);
+    const rowsPerPage = ref(20);
+    const keyword = ref("");
+    const filters = ref({});
+    const isDialogOpen = ref(false);
     //#endregion
 
     /**
@@ -63,12 +74,13 @@ export default {
       store.commit("showLoading");
 
       try {
-        const res = await getAllEmployees();
-        employeeList.value.values = res;
-        displayedRows.value.values = employeeList.value.values.slice(
-          (page.value - 1) * rowsPerPage.value,
-          page.value * rowsPerPage.value
+        const res = await getFilterEmployees(
+          keyword.value,
+          rowsPerPage.value,
+          page.value
         );
+        employeeList.value.values = res.data;
+        total.value = res.totalRecord;
       } catch (error) {
         showToast(
           "error",
@@ -80,30 +92,13 @@ export default {
 
     //#region methods declaration
 
+    const setPage = (e) => {
+      page.value = e;
+    };
+
     const changeRowsPerPage = (e) => {
       rowsPerPage.value = e;
     };
-
-    /**
-     *
-     * feature: update data when paginate
-     * author: Le Minh Quang
-     * date: 29/03/2023
-     */
-
-    watch(rowsPerPage, () => {
-      displayedRows.value.values = employeeList.value.values.slice(
-        (page.value - 1) * rowsPerPage.value,
-        page.value * rowsPerPage.value
-      );
-    });
-
-    watch(page, () => {
-      displayedRows.value.values = employeeList.value.values.slice(
-        (page.value - 1) * rowsPerPage.value,
-        page.value * rowsPerPage.value
-      );
-    });
 
     /**
      *
@@ -113,9 +108,16 @@ export default {
      * date: 29/03/2023
      */
 
-    const showEmployeeForm = (e) => {
-      isFormOpen.value = true;
+    const showEmployeeForm = async (e) => {
+      if (
+        e.mode === ACCOUNTING_ENUM.MODE.ADD ||
+        e.mode === ACCOUNTING_ENUM.MODE.DUPLICATE
+      ) {
+        const newEmployeeCode = await getGeneratedCode();
+        e = { ...e, data: { ...e.data, employeeCode: newEmployeeCode } };
+      }
       formDetail.value = e;
+      isFormOpen.value = true;
     };
 
     /**
@@ -148,12 +150,14 @@ export default {
     const refreshTable = async () => {
       store.commit("showLoading");
       try {
-        const res = await getAllEmployees();
-        employeeList.value.values = res;
-        displayedRows.value.values = employeeList.value.values.slice(
-          (page.value - 1) * rowsPerPage.value,
-          page.value * rowsPerPage.value
+        const res = await getFilterEmployees(
+          keyword.value,
+          rowsPerPage.value,
+          page.value,
+          filters.value
         );
+        employeeList.value.values = res.data;
+        total.value = res.totalRecord;
       } catch (error) {
         showToast(
           "error",
@@ -173,14 +177,9 @@ export default {
       store.commit("showLoading");
       try {
         await deleteEmployeeById(employeeId);
+
+        await refreshTable();
         showToast("success", ACCOUNTING_TEXT.VI.successToast.deleteEmployee);
-        employeeList.value.values = employeeList.value.values.filter(
-          (item) => item.EmployeeId !== employeeId
-        );
-        displayedRows.value.values = employeeList.value.values.slice(
-          (page.value - 1) * rowsPerPage.value,
-          page.value * rowsPerPage.value
-        );
       } catch (error) {
         showToast(
           "error",
@@ -200,16 +199,11 @@ export default {
     const deleteSelectedRows = async (selectedRows) => {
       store.commit("showLoading");
       try {
-        selectedRows.forEach(async (item) => {
-          await deleteEmployeeById(item);
-          employeeList.value.values = employeeList.value.values.filter(
-            (item) => item.EmployeeId !== item
-          );
-          displayedRows.value.values = employeeList.value.values.slice(
-            (page.value - 1) * rowsPerPage.value,
-            page.value * rowsPerPage.value
-          );
-        });
+        for (const row of selectedRows) {
+          await deleteEmployeeById(row);
+        }
+
+        await refreshTable();
         showToast("success", ACCOUNTING_TEXT.VI.successToast.deleteEmployee);
       } catch (error) {
         showToast(
@@ -221,7 +215,61 @@ export default {
       store.commit("hideLoading");
     };
 
+    const updateSearch = (e) => {
+      keyword.value = e;
+    };
+
+    const updateFilter = (e) => {
+      filters.value[Object.keys(e)[0]] = e[Object.keys(e)[0]];
+    };
+
+    const removeFilter = (e) => {
+      delete filters.value[e];
+    };
+
+    const removeAllFilter = () => {
+      filters.value = {};
+    };
+
     //#endregion
+
+    watch(
+      () => filters.value,
+      () => {
+        refreshTable();
+        page.value = 1;
+      },
+      {
+        deep: true,
+      }
+    );
+
+    watch(
+      () => page.value,
+      () => {
+        refreshTable();
+      }
+    );
+
+    watch(
+      () => rowsPerPage.value,
+      () => {
+        refreshTable();
+        page.value = 1;
+      }
+    );
+
+    let timeout = null;
+    watch(
+      () => keyword.value,
+      () => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          refreshTable();
+        }, 500);
+        page.value = 1;
+      }
+    );
 
     return {
       page,
@@ -229,7 +277,10 @@ export default {
       isFormOpen,
       employeeList,
       formDetail,
-      displayedRows,
+      isDialogOpen,
+      total,
+      keyword,
+      filters,
       changeRowsPerPage,
       showEmployeeForm,
       closeForm,
@@ -237,6 +288,11 @@ export default {
       refreshTable,
       deleteEmployee,
       deleteSelectedRows,
+      setPage,
+      updateSearch,
+      updateFilter,
+      removeFilter,
+      removeAllFilter,
     };
   },
 

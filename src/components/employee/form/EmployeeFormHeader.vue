@@ -2,17 +2,28 @@
   <div class="popup-header user-dialog__header">
     <div class="user-dialog__header--left">
       <h3 class="popup-header__title">
-        {{ mode == ACCOUNTING_ENUM.MODE.UPDATE ? "Sửa" : "Thêm" }} thông tin
-        nhân viên
+        {{
+          mode == ACCOUNTING_ENUM.MODE.UPDATE
+            ? $t("form.updateFormTitle")
+            : $t("form.createFormTitle")
+        }}
       </h3>
       <input type="checkbox" tabindex="1" />
-      <label>Là khách hàng</label>
+      <label>{{ $t("words.isEmployee") }}</label>
       <input type="checkbox" tabindex="2" />
-      <label>Là nhà cung cấp</label>
+      <label>{{ $t("words.isCustomer") }}</label>
     </div>
     <div class="user-dialog__header--right">
-      <div class="info-icon"></div>
-      <div class="close-icon" @click="closeForm"></div>
+      <div
+        class="info-icon tooltip-container"
+        v-showTooltip="`${$t('words.help')} (F1)`"
+      ></div>
+      <div
+        class="close-icon tooltip-container"
+        v-showTooltip="`${$t('words.close')} (ESC)`"
+        v-actionOnKeyPress="{ fn: closeForm, isCtrl: false, key: 27 }"
+        @click="closeForm"
+      ></div>
     </div>
   </div>
 </template>
@@ -23,7 +34,7 @@ export default {
   props: ["mode"],
   setup(_, { emit }) {
     const closeForm = () => {
-      emit("closeForm", true);
+      emit("closeForm");
     };
     return { ACCOUNTING_ENUM, closeForm };
   },

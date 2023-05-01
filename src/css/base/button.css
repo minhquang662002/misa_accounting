@@ -18,6 +18,9 @@
     align-items: center;
     justify-content: center;
     font-weight: 500;
+    flex-shrink: 0;
+    width: 100%;
+    font-weight: bold;
 }
 
 .button:focus {
@@ -39,12 +42,16 @@
 
 .button--secondary {
     background-color: #FFFFFF;
-    border: 1px solid #E6E6E6;
+    border: 1px solid #afafaf;
     color: #1F1F1F;
     font-weight: 500;
     padding: 0 16px;
-    min-width: auto;
+
     justify-content: center;
+}
+
+.popup .button--secondary {
+    min-width: auto;
 }
 
 .button.button--secondary:hover {
@@ -95,11 +102,6 @@
     background: url('../../assets/icon/Sprites.64af8f61.svg') no-repeat -650px -201px;
 	width: 20px;
 	height: 22px;
-}
-
-
-.main-content__feature .button div {
-    
 }
 
 .main-content__feature .button--secondary {

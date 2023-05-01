@@ -1,7 +1,10 @@
 <template>
   <thead class="table-content__header">
     <tr>
-      <th class="align-center" id="table__header-checkbox">
+      <th
+        class="align--center table__header-checkbox"
+        style="position: sticky; top: 0; left: 0"
+      >
         <input
           type="checkbox"
           @click="selectAll"
@@ -9,24 +12,50 @@
           :checked="isSelectedAll"
         />
       </th>
-      <th class="align--left" id="table__header-id">Mã nhân viên</th>
-      <th class="align--left" id="table__header-name">Tên nhân viên</th>
-      <th class="align--left" id="table__header-sex">Giới tính</th>
-      <th class="align--center" id="table__header-dob">Ngày sinh</th>
-      <th class="align--left tooltip-container" id="table__header-cmnd">
-        Số CMND<BaseToolTip text="Số chứng minh nhân dân" />
+      <th
+        v-for="header in headerList.filter((item) => item.isShown)"
+        :class="header.className"
+        :style="{
+          minWidth: header.width + 'px',
+          position: 'sticky',
+          top: 0,
+          zIndex: header.sticky ? 3 : 'unset',
+          left: header.sticky
+            ? calculateWidth(
+                headerList,
+                headerList
+                  .filter((item) => item.isShown && item.sticky)
+                  .findIndex((item) => item.model == header.model)
+              ) + 'px'
+            : '',
+        }"
+        :key="header.headerName"
+        v-showTooltip="header.tooltipText"
+      >
+        <span>{{ header.headerName }}</span>
+        <BaseFilterButton
+          :filters="filters"
+          @updateFilter="updateFilter($event)"
+          :model="header.model"
+          @removeFilter="removeFilter($event)"
+          v-if="header.className.includes('filter-container')"
+        />
       </th>
-      <th class="align--left" id="table__header-identityPlace">Nơi cấp</th>
-      <th class="align--left" id="table__header-title">Chức danh</th>
-      <th class="align--left" id="table__header-unit">Tên đơn vị</th>
-      <th class="align--center" id="table__header-feature">Chức năng</th>
+      <th
+        class="align--center table__header-feature"
+        style="position: sticky; top: 0; left: 0"
+      >
+        {{ $t("words.feature") }}
+      </th>
     </tr>
   </thead>
 </template>
 <script>
+import { calculateWidth } from "@/helpers/constants";
 export default {
   name: "EmployeeTableContentHeader",
-  props: ["isSelectedAll", "deselectAll"],
+  props: ["isSelectedAll", "deselectAll", "filters", "headerList"],
+  emits: ["updateFilter", "removeFilter", "selectAll", "deselectAll"],
   setup(props, { emit }) {
     const selectAll = () => {
       if (props.isSelectedAll) {
@@ -35,7 +64,16 @@ export default {
         emit("selectAll");
       }
     };
-    return { selectAll };
+
+    const updateFilter = (e) => {
+      emit("updateFilter", e);
+    };
+
+    const removeFilter = (e) => {
+      emit("removeFilter", e);
+    };
+
+    return { selectAll, updateFilter, removeFilter, calculateWidth };
   },
 };
 </script>

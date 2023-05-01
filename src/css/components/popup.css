@@ -64,13 +64,8 @@
     font-size: 20px;
 }
 
-.popup-header__icon {
-
-}
-
 .popup-description {
     font-weight: 400;
-    font-family: Roboto Regular;
     font-size: 14px;
     color: #1F1F1F;
 }
@@ -90,18 +85,24 @@
     border-bottom-right-radius: 4px;
 }
 
+.user-dialog__body .user-dialog__row:first-child .user-dialog__column {
+    width: 50%;
+}
+
 .user-dialog__column {
     display: flex;
     flex-direction: column;
-  
+    
 }
+
+
 
 .user-dialog__row {
     display: flex;
     gap: 8px;
     flex-wrap: nowrap;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 .user-dialog__footer {
@@ -114,6 +115,27 @@
     gap: 8px;
 
 }
+
+.user-dialog__body .custom_row {
+    gap: 20px;
+}
+
+.user-dialog__body .custom_row .user-dialog__column {
+    gap: 8px;
+    flex-direction: row;
+    width: 50%;
+}
+
+.user-dialog__body .custom_row .user-dialog__column .textfield{
+    flex-grow: 1;
+}
+
+.user-dialog__body .custom_row .user-dialog__column:last-child .textfield:last-child{
+    width: 50%;
+    flex-grow: 0;
+    margin-right: 8px;
+}
+
 
 
 

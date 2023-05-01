@@ -5,21 +5,22 @@
       <div class="user-dialog__column">
         <div class="user-dialog__row">
           <BaseTextField
-            label="Mã"
-            placeholder="Mã"
+            :label="$t('form.employeeCode.label')"
+            :placeholder="$t('form.employeeCode.placeholder')"
             required="true"
-            :value="formInfo?.EmployeeCode"
-            name="EmployeeCode"
+            :value="formInfo?.employeeCode"
+            name="employeeCode"
             tabindex="3"
+            :firstFocus="true"
             :isSubmitted="isSubmitted"
             @fieldChange="updateInfoState($event)"
           />
           <BaseTextField
-            label="Tên"
-            placeholder="Họ và tên"
+            :label="$t('form.fullName.label')"
+            :placeholder="$t('form.fullName.placeholder')"
             required="true"
-            :value="formInfo?.FullName"
-            name="FullName"
+            :value="formInfo?.fullName"
+            name="fullName"
             tabindex="4"
             :isSubmitted="isSubmitted"
             @fieldChange="updateInfoState($event)"
@@ -27,54 +28,56 @@
         </div>
         <div class="user-dialog__row">
           <BaseDropDownList
-            label="Đơn vị"
-            placeholder="Đơn vị"
+            :label="$t('form.departmentName.label')"
+            :placeholder="$t('form.departmentName.placeholder')"
             tabindex="5"
-            name="DepartmentName"
+            name="departmentName"
             queryString="Departments"
-            idString="DepartmentId"
-            :value="formInfo?.DepartmentName"
+            idString="departmentID"
+            :value="formInfo?.departmentName"
             :isSubmitted="isSubmitted"
             @fieldChange="updateInfoState($event)"
             required="true"
+            :mode="ACCOUNTING_ENUM.DROPDOWN.FORM"
           />
         </div>
         <div class="user-dialog__row">
           <BaseDropDownList
-            label="Chức danh"
-            placeholder="Chức danh"
+            :label="$t('form.positionName.label')"
+            :placeholder="$t('form.positionName.placeholder')"
             tabindex="6"
-            name="PositionName"
+            name="positionName"
             queryString="Positions"
-            idString="PositionId"
-            :value="formInfo?.PositionName"
+            idString="positionID"
+            :value="formInfo?.positionName"
             @fieldChange="updateInfoState($event)"
+            :mode="ACCOUNTING_ENUM.DROPDOWN.FORM"
           />
         </div>
       </div>
       <div class="user-dialog__column">
         <div class="user-dialog__row">
           <BaseTextField
-            label="Ngày sinh"
-            placeholder="Ngày sinh"
+            :label="$t('form.dateOfBirth.label')"
+            :placeholder="$t('form.dateOfBirth.placeholder')"
             type="date"
-            name="DateOfBirth"
+            name="dateOfBirth"
             :value="
-              formInfo?.DateOfBirth ? formInfo?.DateOfBirth.split('T')[0] : null
+              formInfo?.dateOfBirth ? formInfo?.dateOfBirth.split('T')[0] : null
             "
             @fieldChange="updateInfoState($event)"
             tabindex="7"
           />
           <BaseTextField
-            label="Giới tính"
+            :label="$t('form.gender.label')"
             type="radio"
-            name="Gender"
+            name="gender"
             :radioList="[
-              { value: 0, text: 'Nữ' },
               { value: 1, text: 'Nam' },
+              { value: 0, text: 'Nữ' },
               { value: 2, text: 'Khác' },
             ]"
-            :value="formInfo?.Gender"
+            :value="formInfo?.gender"
             @fieldChange="updateInfoState($event)"
             tabindex="8"
           />
@@ -82,18 +85,25 @@
         <!--##-->
         <div class="user-dialog__row">
           <BaseTextField
-            label="Số CMND"
-            placeholder="Số CMND"
-            :value="formInfo?.IdentityNumber"
-            name="IdentityNumber"
-            tooltipText="Số chứng minh nhân dân"
+            :label="$t('form.identityNumber.label')"
+            :placeholder="$t('form.identityNumber.placeholder')"
+            :value="formInfo?.identityNumber"
+            name="identityNumber"
+            regex="[0-9]"
+            :tooltipText="$t('form.identityNumber.tooltipText')"
             tabindex="9"
             @fieldChange="updateInfoState($event)"
           />
 
           <BaseTextField
-            label="Ngày cấp"
-            placeholder="Ngày cấp"
+            :label="$t('form.identityDate.label')"
+            :placeholder="$t('form.identityDate.placeholder')"
+            name="identityDate"
+            :value="
+              formInfo?.identityDate
+                ? formInfo?.identityDate.split('T')[0]
+                : null
+            "
             type="date"
             tabindex="10"
             @fieldChange="updateInfoState($event)"
@@ -101,11 +111,11 @@
         </div>
         <div class="user-dialog__row">
           <BaseTextField
-            placeholder="Nơi cấp"
-            label="Nơi cấp"
+            :placeholder="$t('form.identityPlace.placeholder')"
+            :label="$t('form.identityPlace.placeholder')"
             tabindex="11"
-            name="IdentityPlace"
-            :value="formInfo?.IdentityPlace"
+            name="identityPlace"
+            :value="formInfo?.identityPlace"
             @fieldChange="updateInfoState($event)"
           />
         </div>
@@ -114,68 +124,80 @@
     <!--##-->
     <div class="user-dialog__row">
       <BaseTextField
-        label="Địa chỉ"
-        placeholder="Địa chỉ"
-        :value="formInfo?.Address"
-        name="Address"
+        :label="$t('form.address.label')"
+        :placeholder="$t('form.address.placeholder')"
+        :value="formInfo?.address"
+        name="address"
         @fieldChange="updateInfoState($event)"
         tabindex="12"
       />
     </div>
     <!--##-->
-    <div class="user-dialog__row">
-      <BaseTextField
-        label="ĐT di động"
-        placeholder="Điện thoại di động"
-        style="width: 200px"
-        :value="formInfo?.PhoneNumber"
-        name="PhoneNumber"
-        tooltipText="Điện thoại di động"
-        @fieldChange="updateInfoState($event)"
-        tabindex="13"
-      />
-      <BaseTextField
-        label="ĐT cố định"
-        placeholder="Điện thoại cố định"
-        style="width: 200px"
-        :value="formInfo?.PhoneNumber"
-        name="PhoneNumber"
-        tooltipText="Điện thoại cố định"
-        tabindex="14"
-      />
-      <BaseTextField
-        label="Email"
-        placeholder="Email"
-        style="width: 200px"
-        :value="formInfo?.Email"
-        @fieldChange="updateInfoState($event)"
-        tabindex="15"
-      />
+    <div class="user-dialog__row custom_row">
+      <div class="user-dialog__column">
+        <BaseTextField
+          :label="$t('form.phoneNumber.label')"
+          :placeholder="$t('form.phoneNumber.placeholder')"
+          :value="formInfo?.phoneNumber"
+          name="phoneNumber"
+          regex="[0-9]"
+          :tooltipText="$t('form.phoneNumber.tooltipText')"
+          @fieldChange="updateInfoState($event)"
+          tabindex="13"
+        />
+        <BaseTextField
+          :label="$t('form.landline.label')"
+          :placeholder="$t('form.landline.placeholder')"
+          :value="formInfo?.landline"
+          name="landline"
+          regex="[0-9]"
+          :tooltipText="$t('form.landline.tooltipText')"
+          tabindex="14"
+        />
+      </div>
+      <div class="user-dialog__column">
+        <BaseTextField
+          :label="$t('form.email.label')"
+          :placeholder="$t('form.email.placeholder')"
+          name="email"
+          :value="formInfo?.email"
+          @fieldChange="updateInfoState($event)"
+          tabindex="15"
+        />
+      </div>
     </div>
     <!--##-->
-    <div class="user-dialog__row">
-      <BaseTextField
-        label="Tài khoản ngân hàng"
-        placeholder="Tài khoản ngân hàng"
-        style="width: 200px"
-        tabindex="16"
-      />
-      <BaseTextField
-        label="Tên ngân hàng"
-        placeholder="Tên ngân hàng"
-        style="width: 200px"
-        tabindex="17"
-      />
-      <BaseTextField
-        label="Chi nhánh"
-        placeholder="Chi nhánh"
-        style="width: 200px"
-        tabindex="18"
-      />
+    <div class="user-dialog__row custom_row">
+      <div class="user-dialog__column">
+        <BaseTextField
+          :label="$t('form.bankAccount.label')"
+          :placeholder="$t('form.bankAccount.placeholder')"
+          name="bankAccount"
+          :value="formInfo?.bankAccount"
+          tabindex="16"
+        />
+        <BaseTextField
+          :label="$t('form.bankName.label')"
+          :placeholder="$t('form.bankName.placeholder')"
+          name="bankName"
+          :value="formInfo?.bankName"
+          tabindex="17"
+        />
+      </div>
+      <div class="user-dialog__column">
+        <BaseTextField
+          :label="$t('form.bankBranch.label')"
+          :placeholder="$t('form.bankBranch.placeholder')"
+          name="bankBranch"
+          :value="formInfo?.bankBranch"
+          tabindex="18"
+        />
+      </div>
     </div>
   </div>
 </template>
 <script>
+import { ACCOUNTING_ENUM } from "@/helpers/resources";
 export default {
   name: "EmployeeFormBody",
   props: ["formInfo", "isSubmitted"],
@@ -185,7 +207,7 @@ export default {
       emit("updateInfoState", e);
     };
 
-    return { updateInfoState };
+    return { ACCOUNTING_ENUM, updateInfoState };
   },
 };
 </script>

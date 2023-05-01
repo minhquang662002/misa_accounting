@@ -4,18 +4,21 @@
 
 .tooltip {
     position: absolute;
-    color: white;
     font-size: 12px;
+    font-family: Notosans Regular;
     text-align: center;
-    top: 30px;
-    left: 30px;
+    top: 20px;
+    left: 40%;
     visibility: hidden;
     opacity: 0;
-    transition: 0.3s;
-    background-color: black;
-    padding: 2px 4px;
-    border-radius: 4px;
-    z-index: 1;
+    transition: 0.1s;
+    background-color: #505050;
+    padding: 3px 10px;
+    border-radius: 2px;
+    z-index: 10000;
+    white-space: nowrap;
+    font-weight: 500;
+    color: white;
 }
 
 .tooltip-container:hover .tooltip {
@@ -23,25 +26,5 @@
     visibility: visible;
 }
 
-/* .tooltip-bg-fill {
-    background-color: rgba(0, 0, 0, 0.9);
-    position: absolute;
-    inset: 0;
-} */
 
-.tooltip span {
-    color: white;
-}
 
-.tooltip::after {
-    content: "";
-    width: 0; 
-    height: 0; 
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-bottom: 5px solid black;
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-}

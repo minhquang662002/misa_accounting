@@ -42,9 +42,9 @@
     font-weight: 400;
 }
 
-.textfield__input-wrapper:hover .textfield__input, .textfield__input-wrapper:hover {
+/* .textfield__input-wrapper:hover .textfield__input, .textfield__input-wrapper:hover {
     background-color: #F6F6F6;
-} 
+}  */
 
 .textfield__input-wrapper:focus-within{
     border-color: #50B83C;
@@ -72,7 +72,6 @@
 .textfield__error-message {
     color: #E61D1D;
     font-size: 12px;
-    font-family: Roboto Regular;
     font-weight: 400;
     position: absolute;
     top: 100%;
@@ -98,7 +97,7 @@
 .input-search {
     background-image: url("../../assets/icon/search.png");
     background-repeat: no-repeat;
-    background-position: 12px center;
+    background-position: right 12px center;
     background-size: 16px;
 }
 
@@ -130,10 +129,10 @@
 
 .table__feature-container .textfield__input-wrapper {
     background-image: url("../../assets/icon/search.png");
-    background-position: 12px center;
+    background-position: right 12px center;
     background-size: 16px;
     background-repeat: no-repeat;
-    padding-left: 36px;
+    padding-right: 36px;
 }
 
 .radio-group {

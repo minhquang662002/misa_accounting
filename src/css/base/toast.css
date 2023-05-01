@@ -35,9 +35,6 @@
     margin-left: 40px;
 }
 
-.toast__msg {
-    font-family: Roboto Regular;
-}
 
 .toast--success .toast__title {
     color: #50B83C;

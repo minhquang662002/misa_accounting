@@ -1,16 +1,20 @@
 <template>
   <BaseDialog
     v-if="isDialogShown"
-    title="Cảnh báo"
-    :text="`Bạn có chắc là muốn xóa nhân viên <${menuPos?.data?.EmployeeCode}> không?`"
-    cancelText="Không"
-    continueText="Có"
+    :text="$t('deleteWarningText', { id: menuPos?.data?.employeeCode })"
+    :cancelText="$t('words.no')"
+    :continueText="$t('words.yes')"
     type="warning"
     @cancelAction="cancelDeleteAction"
-    @continueAction="deleteEmployee(menuPos?.data?.EmployeeId)"
+    @continueAction="deleteEmployee(menuPos?.data?.employeeID)"
+    innerAlign="between"
   />
   <div
-    v-click-outside="() => (isMenuShown = false)"
+    v-click-outside:triangle-dropdown="
+      () => {
+        isMenuShown = false;
+      }
+    "
     v-if="isMenuShown"
     class="table-feature-list-container"
     :style="{
@@ -19,7 +23,19 @@
     }"
   >
     <div class="table-feature-list">
-      <div>Nhân bản</div>
+      <div
+        @click="
+          () => {
+            showEmployeeForm({
+              data: menuPos?.data,
+              mode: ACCOUNTING_ENUM.MODE.DUPLICATE,
+            });
+            isMenuShown = false;
+          }
+        "
+      >
+        {{ $t("words.duplicate") }}
+      </div>
       <div
         @click="
           () => {
@@ -28,18 +44,17 @@
           }
         "
       >
-        Xóa
+        {{ $t("words.delete") }}
       </div>
-      <div>Ngừng sử dụng</div>
+      <div>{{ $t("words.stopUsing") }}</div>
     </div>
   </div>
   <tbody class="table-content__body">
     <tr
-      v-for="data in employeeList.values"
-      :key="data.EmployeeId"
-      @dblclick="showEmployeeForm({ data, mode: 2 })"
+      v-for="data in employeeList"
+      :key="data.employeeID"
       :class="
-        rowsSelected.some((item) => item === data.EmployeeId)
+        rowsSelected.some((item) => item === data.employeeID)
           ? 'row--checked'
           : ''
       "
@@ -47,54 +62,46 @@
       <td class="table__checkbox-cell align--center">
         <input
           v-model="test"
-          :value="data.EmployeeId"
+          :value="data.employeeID"
           type="checkbox"
-          @click="() => selectRow(data.EmployeeId)"
+          @click="() => selectRow(data.employeeID)"
         />
       </td>
-      <td class="table__id-cell tooltip-container align--left">
-        {{ data.EmployeeCode }}<BaseToolTip :text="data.EmployeeCode" />
-      </td>
-      <td class="table__name-cell tooltip-container align--left">
-        {{ data.FullName }}<BaseToolTip :text="data.FullName" />
-      </td>
-      <td class="table__sex-cell align--left">
+      <td
+        @dblclick="
+          showEmployeeForm({ data, mode: ACCOUNTING_ENUM.MODE.UPDATE })
+        "
+        v-for="header in headerList.filter((item) => item.isShown)"
+        :class="header.className"
+        :key="header.className"
+        :style="{
+          position: header.sticky ? 'sticky' : 'unset',
+          zIndex: header.sticky ? 2 : 'unset',
+          left:
+            calculateWidth(
+              headerList,
+              headerList
+                .filter((item) => item.isShown && item.sticky)
+                .findIndex((item) => item.model == header.model)
+            ) + 'px',
+        }"
+        v-showTooltip="data[header.model]"
+      >
         {{
-          data.Gender == 0
-            ? "Nữ"
-            : data.Gender == 1
-            ? "Nam"
-            : data.Gender == 2
-            ? "Khác"
-            : "Không xác định"
+          header.model.toLowerCase().includes("date")
+            ? data[header.model]
+              ? new Date(data[header.model]).toLocaleDateString("en-GB")
+              : null
+            : data[header.model]
         }}
       </td>
-      <td class="table__dob-cell align--center">
-        {{
-          data.DateOfBirth &&
-          `${new Date(data.DateOfBirth).toLocaleDateString("en-GB")}`
-        }}
-      </td>
-      <td class="table__cmnd-cell tooltip-container align--left">
-        {{ data.IdentityNumber }}
-        <BaseToolTip :text="data.IdentityNumber" />
-      </td>
-      <td class="table__identity-place-cell align--left">
-        {{ data.IdentityPlace }}
-        <BaseToolTip :text="data.IdentityNumber" />
-      </td>
-      <td class="table__title-cell align--left">
-        {{ data.PositionName }}
-      </td>
-
-      <td class="table__unit-cell align--left">
-        {{ data.DepartmentName }}
-      </td>
-      <td class="table__feature-cell align--center">
+      <td class="align--center table__feature-cell">
         <EmployeeTableFeatureCellButton
           @showMenu="isMenuShown = $event"
           @updateMenu="menuPos = $event"
-          @showEmployeeForm="showDetailEmployeeForm({ data, mode: 2 })"
+          @showEmployeeForm="
+            showEmployeeForm({ data, mode: ACCOUNTING_ENUM.MODE.UPDATE })
+          "
           :data="data"
           :isMenuShown="isMenuShown"
         />
@@ -103,18 +110,19 @@
   </tbody>
 </template>
 <script>
+import { ACCOUNTING_ENUM } from "@/helpers/resources";
 import EmployeeTableFeatureCellButton from "./EmployeeTableFeatureCellButton.vue";
+import { calculateWidth } from "@/helpers/constants";
 import { ref, watch } from "vue";
 export default {
   name: "EmployeeTableContentBody",
-  props: ["employeeList", "rowsSelected"],
+  props: ["employeeList", "rowsSelected", "headerList"],
   components: { EmployeeTableFeatureCellButton },
   emits: ["showEmployeeForm", "deleteEmployee", "selectRow"],
   setup(props, { emit }) {
     const isDialogShown = ref(false);
     const menuPos = ref(null);
     const isMenuShown = ref(false);
-    const checkboxRef = ref(null);
     const test = ref([]);
     //#region method declarations
 
@@ -123,10 +131,10 @@ export default {
     };
 
     const showEmployeeForm = (data) => {
+      console.log(data);
       emit("showEmployeeForm", data);
     };
     const cancelDeleteAction = () => {
-      console.log("rn");
       menuPos.value = null;
       isDialogShown.value = false;
     };
@@ -149,7 +157,8 @@ export default {
       cancelDeleteAction,
       deleteEmployee,
       selectRow,
-      checkboxRef,
+      calculateWidth,
+      ACCOUNTING_ENUM,
       test,
     };
   },

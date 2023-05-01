@@ -16,10 +16,6 @@
         >
         {{ text }}
       </p>
-      <!-- <div class="toast__action-container">
-          <p class="toast__action">Hoàn tác</p>
-          <img src="./assets/icon/x.svg" class="toast__action-icon" />
-        </div> -->
     </div>
   </div>
 </template>

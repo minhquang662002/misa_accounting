@@ -6,6 +6,12 @@
     @dropAllCheckBoxes="dropAllCheckBoxes"
     @deleteSelectedRows="deleteSelectedRows"
     :rowsSelected="rowsSelected"
+    :keyword="keyword"
+    @updateSearch="updateSearch($event)"
+    :filters="filters"
+    @removeFilter="removeFilter($event)"
+    @removeAllFilter="removeAllFilter"
+    @updateDisplaySetting="updateDisplaySetting($event)"
   />
 
   <div class="table-content-wrapper">
@@ -13,58 +19,34 @@
       <EmployeeTableContentHeader
         @selectAll="selectAllCheckboxes"
         @deselectAll="dropAllCheckBoxes"
-        :isSelectedAll="rowsSelected.length === employeeList.values.length"
+        :isSelectedAll="rowsSelected.length >= page * rowsPerPage"
+        :filters="filters"
+        :headerList="headerList"
+        @updateFilter="updateFilter($event)"
+        @removeFilter="($event) => removeFilter($event)"
       />
       <EmployeeTableContentBody
         :employeeList="employeeList"
         :rowsSelected="rowsSelected"
+        :headerList="headerList"
         @showEmployeeForm="showEmployeeForm($event)"
         @deleteEmployee="deleteEmployee($event)"
         @selectRow="selectRow($event)"
       />
     </table>
-    <div class="table-content__footer">
+    <div v-if="records > 0" class="table-content__footer">
       <p>
-        Total:
-        <b id="record__number">{{ records }}</b> records
+        {{ $t("words.total") }}:
+        <b id="record__number">{{ records?.toLocaleString("it-IT") }}</b>
+        {{ $t("words.record") }}
       </p>
-      <div class="table-content-pagination-container">
-        <p>Record/Page</p>
-        <div style="display: flex; gap: 30px">
-          <div style="display: flex; gap: 16px; align-items: center">
-            <!-- <BaseDropDownList /> -->
-            <BaseDropDownList
-              :value="rowsPerPage"
-              @changeRowsPerPage="changeRowsPerPage($event)"
-              required="true"
-              name="rowsPerPage"
-              :mode="ACCOUNTING_ENUM.DROPDOWN.PAGINATION"
-              :defautList="[
-                { rowsPerPage: 10 },
-                { rowsPerPage: 50 },
-                { rowsPerPage: 100 },
-              ]"
-            />
-
-            <p>
-              <b>{{ rowsPerPage * (page - 1) + 1 }}-{{ rowsPerPage * page }}</b>
-              records
-            </p>
-          </div>
-          <div style="display: flex; align-items: center">
-            <img
-              @click="prevPage"
-              src="../../../assets/icon/btn-prev-page.svg"
-              alt=""
-            />
-            <img
-              @click="nextPage"
-              src="../../../assets/icon/btn-next-page.svg"
-              alt=""
-            />
-          </div>
-        </div>
-      </div>
+      <BasePagination
+        :rowsPerPage="rowsPerPage"
+        :page="page"
+        :total="records"
+        @setPage="setPage($event)"
+        @changeRowsPerPage="changeRowsPerPage($event)"
+      />
     </div>
   </div>
 </template>
@@ -72,16 +54,26 @@
 import EmployeeTableFeatureRow from "./EmployeeTableFeatureRow.vue";
 import EmployeeTableContentHeader from "./EmployeeTableContentHeader.vue";
 import EmployeeTableContentBody from "./EmployeeTableContentBody.vue";
+import BasePagination from "@/components/base/BasePagination.vue";
 import { ACCOUNTING_ENUM } from "@/helpers/resources";
-
 import { ref } from "vue";
+import { TABLE_HEADERS } from "@/helpers/constants";
 export default {
   name: "EmployeeTable",
-  props: ["isFormOpen", "employeeList", "records", "page", "rowsPerPage"],
+  props: [
+    "isFormOpen",
+    "employeeList",
+    "records",
+    "page",
+    "rowsPerPage",
+    "keyword",
+    "filters",
+  ],
   components: {
     EmployeeTableFeatureRow,
     EmployeeTableContentHeader,
     EmployeeTableContentBody,
+    BasePagination,
   },
   emits: [
     "showEmployeeForm",
@@ -90,10 +82,20 @@ export default {
     "changeRowsPerPage",
     "prevPage",
     "nextPage",
+    "deleteSelectedRows",
+    "setPage",
+    "updateSearch",
+    "updateFilter",
+    "removeFilter",
+    "removeAllFilter",
   ],
   setup(props, { emit }) {
     const rowsSelected = ref([]);
-
+    const headerList = ref(
+      localStorage.getItem("displaySettings")
+        ? JSON.parse(localStorage.getItem("displaySettings"))
+        : TABLE_HEADERS
+    );
     //#region methods declaration
 
     const prevPage = () => {
@@ -110,6 +112,10 @@ export default {
 
     const changeRowsPerPage = (e) => {
       emit("changeRowsPerPage", e);
+    };
+
+    const setPage = (e) => {
+      emit("setPage", e);
     };
 
     /**
@@ -174,13 +180,33 @@ export default {
      */
 
     const selectAllCheckboxes = () => {
-      rowsSelected.value.splice(0);
-      const all = props.employeeList.values.map((item) => item.EmployeeId);
+      const all = props.employeeList.map((item) => item.employeeID);
       rowsSelected.value.push(...all);
     };
 
     const deleteSelectedRows = () => {
       emit("deleteSelectedRows", rowsSelected.value);
+      rowsSelected.value = [];
+    };
+
+    const updateSearch = (e) => {
+      emit("updateSearch", e);
+    };
+
+    const updateFilter = (e) => {
+      emit("updateFilter", e);
+    };
+
+    const removeFilter = (e) => {
+      emit("removeFilter", e);
+    };
+
+    const removeAllFilter = () => {
+      emit("removeAllFilter");
+    };
+
+    const updateDisplaySetting = (e) => {
+      headerList.value = e;
     };
 
     //#endregion
@@ -188,6 +214,7 @@ export default {
     return {
       ACCOUNTING_ENUM,
       rowsSelected,
+      headerList,
       prevPage,
       nextPage,
       showEmployeeForm,
@@ -198,6 +225,12 @@ export default {
       dropAllCheckBoxes,
       selectAllCheckboxes,
       deleteSelectedRows,
+      setPage,
+      updateSearch,
+      updateFilter,
+      removeFilter,
+      removeAllFilter,
+      updateDisplaySetting,
     };
   },
 };

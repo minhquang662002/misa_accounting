@@ -1,6 +1,6 @@
 <template>
-  <span id="edit-text" @click="showDetailEmployeeForm()">Sửa</span>
-  <span @click="showMenu" id="triangle-dropdown"></span>
+  <span id="edit-text" @click="showEmployeeForm">{{ $t("words.modify") }}</span>
+  <span @click="showMenu" class="triangle-dropdown"></span>
 </template>
 <script>
 export default {
@@ -12,6 +12,8 @@ export default {
       emit("showEmployeeForm");
     };
     const showMenu = (e) => {
+      e.stopPropagation();
+
       if (props.isMenuShown) {
         emit("showMenu", false);
       } else {

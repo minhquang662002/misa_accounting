@@ -10,8 +10,9 @@
       v-if="label"
       class="textfield__label"
       :class="tooltipText ? 'tooltip-container' : ''"
-      >{{ label }}<BaseToolTip :text="tooltipText"
-    /></label>
+      v-showTooltip="tooltipText"
+      >{{ label }}
+    </label>
     <div
       class="textfield__input-wrapper"
       :class="type === 'radio' ? 'textfield__input-radio' : ''"
@@ -24,6 +25,8 @@
         class="textfield__input"
         :placeholder="placeholder"
         :tabindex="tabindex"
+        ref="firstFocusRef"
+        @keypress="checkRegex($event)"
       />
       <input
         v-model="inpValue"
@@ -47,14 +50,11 @@
         </div>
       </div>
       <div v-if="icon" class="textfield__input-icon-container"></div>
-      <div v-if="errorMsg" class="textfield__error-message">{{ errorMsg }}</div>
     </div>
   </div>
 </template>
 <script>
-import { ref } from "vue";
-import BaseToolTip from "./BaseToolTip.vue";
-import { ACCOUNTING_TEXT } from "@/helpers/resources";
+import { ref, watch, onMounted } from "vue";
 export default {
   name: "BaseTextField",
   props: {
@@ -70,52 +70,74 @@ export default {
     tabindex: {},
     tooltipText: {},
     isSubmitted: {},
+    regex: {},
+    firstFocus: {},
   },
-  setup(props) {
+  setup(props, { emit }) {
     //#region state declarations
-    const inpValue = ref(props.value ? props.value : "");
-    const errorMsg = ref("");
+    const inpValue = ref(props.value);
     const isValid = ref(true);
+    const firstFocusRef = ref();
     //#endregion
     //#region methods declaration
+
+    const checkRegex = (e) => {
+      if (!new RegExp(props.regex).test(e.key)) {
+        e.preventDefault();
+      }
+    };
+
     const validateOnBlur = (e) => {
       if (
         e.target.parentNode.parentNode.getAttribute("required") === "true" &&
-        !inpValue.value.trim()
+        !inpValue.value?.trim()
       ) {
         e.target.parentNode.parentNode.setAttribute("error", true);
-        errorMsg.value = ACCOUNTING_TEXT.VI.validateText;
       }
     };
     const removeValidate = (e) => {
       e.target.parentNode.parentNode.removeAttribute("error");
-      errorMsg.value = "";
     };
     //#endregion
+
+    watch(
+      () => inpValue.value,
+      (newVal) => {
+        emit("fieldChange", { [props.name]: newVal });
+      }
+    );
+
+    watch(
+      () => props.value,
+
+      (newVal) => (inpValue.value = newVal)
+    );
+
+    watch(
+      () => props.isSubmitted,
+      (newVal) => {
+        if (newVal) {
+          if (!inpValue.value && props.required) {
+            isValid.value = false;
+          }
+        }
+      }
+    );
+
+    onMounted(() => {
+      if (props.firstFocus) {
+        firstFocusRef.value.focus();
+      }
+    });
+
     return {
       inpValue,
+      firstFocusRef,
+      checkRegex,
       validateOnBlur,
       removeValidate,
       isValid,
-      errorMsg,
     };
   },
-  watch: {
-    inpValue(newValue) {
-      this.$emit("fieldChange", { [this.$props.name]: newValue });
-    },
-    value(newValue) {
-      this.inpValue = newValue;
-    },
-    isSubmitted(newVal) {
-      if (newVal) {
-        if (!this.inpValue && this.$props.required) {
-          this.isValid = false;
-        }
-      }
-    },
-  },
-
-  components: { BaseToolTip },
 };
 </script>

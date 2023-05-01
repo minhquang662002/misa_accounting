@@ -2,27 +2,37 @@
   <div class="dialog-container" :class="type" @click.prevent="closeDialog">
     <div class="dialog-overlay"></div>
     <div class="dialog">
-      <!-- <div class="dialog-header">
-        <div class="dialog-header__title">{{ title }}</div>
-        <div class="dialog-header__icon--close"></div>
-      </div> -->
       <div class="dialog-description">
         <div class="dialog-icon"></div>
         {{ text }}
       </div>
-      <div class="dialog-footer">
+      <div
+        class="dialog-footer"
+        :style="
+          align === 'center'
+            ? 'justify-content: center'
+            : align === 'between'
+            ? 'justify-content: space-between'
+            : 'justify-content: flex-end'
+        "
+      >
         <slot></slot>
-        <div style="display: flex; gap: 10px; justify-self: flex-end">
-          <button
-            v-if="cancelText"
-            class="button button--secondary"
-            @click="cancelAction"
-          >
-            {{ cancelText }}
-          </button>
-          <button v-if="continueText" class="button" @click="continueAction">
-            {{ continueText }}
-          </button>
+        <div
+          style="display: flex; gap: 10px; flex-grow: 1"
+          :style="
+            innerAlign === 'between'
+              ? 'justify-content: space-between'
+              : innerAlign === 'center'
+              ? 'justify-content: center'
+              : 'justify-content: flex-end'
+          "
+        >
+          <div v-if="cancelText" @click="cancelAction">
+            <BaseButton type="secondary" :text="cancelText"> </BaseButton>
+          </div>
+          <div v-if="continueText" @click="continueAction">
+            <BaseButton type="primary" :text="continueText"> </BaseButton>
+          </div>
         </div>
       </div>
     </div>
@@ -31,7 +41,8 @@
 <script>
 export default {
   name: "BaseDialog",
-  props: ["title", "text", "cancelText", "continueText", "type"],
+  props: ["text", "cancelText", "continueText", "type", "align", "innerAlign"],
+  emits: ["continueAction", "cancelAction"],
   setup(_, { emit }) {
     //#region method declarations
     /**

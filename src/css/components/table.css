@@ -1,5 +1,3 @@
-
-
 .table__feature-row {
     display: flex;
     align-items: center;
@@ -12,6 +10,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-left: auto;
     gap: 20px;
 }
 
@@ -19,53 +18,58 @@
 	background: url('../../assets/icon/Sprites.64af8f61.svg') no-repeat -1098px -90px;
     width: 20px;
 	height: 21px;
+    cursor: pointer;
 }
 
 .table__excel-icon {
 	background: url('../../assets/icon/Sprites.64af8f61.svg') no-repeat -1265px -90px;
 	width: 23px;
 	height: 20px;
+    cursor: pointer;
 }
 
 .table__setting-icon  {
 	background: url('../../assets/icon/Sprites.64af8f61.svg') no-repeat -676px -30px;
 	width: 23px;
 	height: 24px;
+    cursor: pointer;
 }
-
-
 
 .table-content-wrapper {
     overflow: auto;
-    height: 100%;
+    height: 650px;
     background-color: white;
-
 }
 
 .table-content {
     border-collapse: separate;
     border-spacing: 0;
+    background-color: white;
+
 }
 
 .table-content__header {
     background-color: #eceef1;
-    position: sticky;
-    top: 0;
+
     z-index: 2;
 }
 
 .table-content__header th {
-    font-weight: 500;
+    font-family: Notosans Bold;
     white-space: nowrap;
+    text-transform: uppercase;
+    font-size: 12px;
+    background-color: #eceef1;
+    z-index: 3;
 }
 
 .table-content__body {
-    min-height: 1290px;
+    background-color: white;
 }
 
-/* .table-content__body tr:has(input[type="checkbox"]:checked) {
-    background-color: #E5F3FF;
-} */
+.table-content__body tr td{
+    background-color: white;
+}
 
 .table-content__body tr:hover td{
     background-color: #F2F9FF;
@@ -73,8 +77,9 @@
 
 .table-content__body tr {
     white-space: nowrap;
-    font-family: Roboto Regular;
+    font-family: Notosans Regular;
     font-weight: 400;
+    height: 30px;
 }
 
 
@@ -91,54 +96,79 @@
     border-bottom: 1px solid #c7c7c7;
 }
 
-.table-content__body tr, .table-content__header tr{
-    height: 48px;
+ .table-content__header tr{
+    height: 32px;
 }
 
+.table__header-id {
+    min-width: 180px;
+}
 
+.table__header-name {
+    min-width: 434px;
+}
 
-#table__header-id {
+.table__header-sex {
+    min-width: 120px;
+}
+
+.table__header-dob {
+    min-width: 140px;
+}
+
+.table__header-identityNumber {
+    min-width: 200px;
+}
+
+.table__header-identityDate{
+    min-width: 150px;
+}
+
+.table__header-identityPlace{
+    min-width: 150px;
+}
+
+.table__header-title {
+    min-width: 241px;
+}
+
+.table__header-unit {
+    min-width: 189px;
+}
+
+.table__header-unit-code {
+    min-width: 150px;
+}
+
+.table__header-address{
+    min-width: 200px;
+}
+
+.table__header-phone{
+    min-width: 150px;
+}
+
+.table__header-landline{
+    min-width: 150px;
+}
+
+.table__header-email{
+    min-width: 200px;
+}
+
+.table__header-account {
     width: 150px;
 }
 
-#table__header-name {
-    width: 200px;
-}
-
-#table__header-sex {
-    width: 100px;
-}
-
-#table__header-dob {
-    width: 200px;
-}
-
-#table__header-cmnd {
-    width: 180px;
-}
-
-#table__header-title {
+.table__header-bankname {
     width: 150px;
 }
 
-#table__header-unit {
+.table__header-bankbranch {
     width: 300px;
 }
 
-
-#table__header-account {
-    width: 150px;
-}
-
-#table__header-bankname {
-    width: 150px;
-}
-
-#table__header-bankbranch {
-    width: 300px;
-}
-
-#table__header-feature {
+.table__header-feature {
     width: 150px;
 }
 
@@ -167,14 +197,12 @@
     padding: 0 16px;
     height: 56px;
     z-index: 2;
+    border-top: 1px solid #c7c7c7;
 }
 
 .table-content-pagination-container {
     display: flex; 
-    gap: 60px
 }
-
-
 
 .table-content-wrapper::-webkit-scrollbar {
 	width: 10px;
@@ -196,11 +224,11 @@
     position: sticky;
     right: 0;
     background-color: white;
-    z-index: 1;
+    z-index: 2;
     overflow: visible;
 }
 
-.table__feature-cell #triangle-dropdown {
+.table__feature-cell .triangle-dropdown {
     width: 0; 
     height: 0; 
     border-left: 5px solid transparent;
@@ -215,16 +243,17 @@
 
 .table__feature-cell #edit-text {
     cursor: pointer;
+    font-weight: bold;
 }
 
 .table__feature-cell #edit-text:active, 
-.table__feature-cell #triangle-dropdown:active{
+.table__feature-cell .triangle-dropdown:active{
     outline: 1px solid #0075c0;
 }
 
 .table-feature-list-container {
     position: absolute;
-    z-index: 2;
+    z-index: 3;
     white-space: nowrap;
 }
 
@@ -233,12 +262,12 @@
     position: sticky;
     color: black;
     border: 1px solid #babec5;
+    font-size: 13px;
 }
 
-.table-feature-list div {
-    padding: 5px;
+.table-feature-list > div {
+    padding: 6px 10px;
     transition: .25s;
-
 }
 
 .table-feature-list div:hover {
@@ -247,15 +276,18 @@
     cursor: pointer;
 }
 
+.table__feature-container .textfield__input-wrapper {
+    border-radius: 0;
+}
 
-
-#table__header-checkbox {
+.table__header-checkbox {
     position: sticky;
     left: 0;
     background-color: #eceef1;
+    z-index: 1;
 }
 
-#table__header-feature {
+.table__header-feature {
     position: sticky;
     right: 0;
     background-color: #eceef1;
@@ -268,6 +300,11 @@
     z-index: 1;
 }
 
+thead input[type="checkbox"], tbody input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+}
+
 .row--checked {
     background-color: #E5F3FF;
 }
@@ -275,6 +312,10 @@
 
 .row--checked .table__feature-cell, .row--checked .table__checkbox-cell{
     background-color: #E5F3FF;
+}
+
+.row--checked td{
+    background-color: #E5F3FF!important;
 }
 
 
@@ -294,5 +335,176 @@
     cursor: pointer;
 }
 
+.table__settings {
+    height: 100vh;
+    background-color: white;
+    position: fixed;
+    width: 50%;
+    z-index: 4;
+    top: 0;
+    right: 0;
+    box-shadow: 0 5px 20px 0 rgba(0,0,0,.1);
+    display: flex;
+    flex-direction: column;
+}
 
 
+.table__settings--header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 16px 12px 16px;
+}
+
+.table__settings--header > p {
+    color: #111;
+    font-weight: 700;
+    font-size: 24px;
+    margin: 0;
+}
+
+.table__settings-feature--row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 16px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.table__settings-input-wrapper {
+    display: flex;
+    border: 1px solid #babec5;
+    align-items: center;
+    padding-right: 10px;
+    border-radius: 2px;
+}
+
+.table__settings-input {
+    height: 26px;
+    outline: none;
+    padding-left: 10px;
+    border-radius: 2px;
+    font-size: 13px;
+    border: none;
+}
+
+.table__settings-input::placeholder {
+    color: #9D9D9D;
+    font-style: italic;
+}
+
+.table__settings-input-icon {
+    background: url("../../assets/icon/Sprites.64af8f61.svg") no-repeat;
+    background-position: -992px -360px;
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    min-height: 16px;
+}
+
+.table__settings--body {
+    flex-grow: 1;
+}
+
+.table__settings--body table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    padding: 0 16px;
+}
+
+.table__settings--body table tbody tr {
+    height: 30px;
+    font-size: 13px;
+}
+
+.table__settings--body table tbody tr td{
+    border-bottom: 1px solid #c7c7c7;
+    border-top: 1px solid #c7c7c7;
+}
+
+.table__settings--body thead {
+    background-color: #eceef1;
+    font-size: 12px;
+}
+
+.table__settings-modify-btn {
+    color: #0075c0;
+    cursor: pointer;
+}
+
+.table__settings-divider {
+    height: 4px;
+    width: 100%;
+    background: #f4f5f8;
+}
+
+.table__settings--footer {
+    display: flex;
+    justify-content: space-between;
+    justify-self: flex-end;
+    padding: 10px 16px;
+}
+
+.table__settings-btn-group--right {
+    display: flex;
+    gap: 10px;
+}
+
+.table__settings--footer .button{
+    min-width: auto;
+    min-height: auto;
+    height: 26px;
+    width: 60px;
+    border-radius: 3px;
+    padding: 6px 16px;
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+.setting-default-btn .button{
+    width: 160px;
+}
+
+.table__settings-checbox-header {
+    width: 50px;
+}
+
+.table__settings-table-container tbody .textarea-container {
+    display: none;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 0 6px;
+    border-radius: 2px;
+    height: 26px;
+    align-items: center;
+}
+
+.table__settings-table-container .editable .textarea-container {
+    display: flex;
+}
+
+.table__settings-table-container tbody td textarea {
+    resize: none;
+    border: none;
+    display: flex;
+    height: 16px;
+    overflow: hidden;
+    outline: none;
+    flex-grow: 1;
+}
+
+.table__settings-table-container tbody .textarea-container {
+    width: 180px;
+}
+
+.table__settings-table-container tbody tr td:last-child .textarea-container {
+
+    width: 80px;
+
+
+}
+
+.table__settings-table-container tbody .editable span {
+    display: none;
+}

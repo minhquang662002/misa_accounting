@@ -7,12 +7,13 @@
 
 .dialog {
     background-color: white;
-    width: 400px;
+    width: 500px;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     padding: 24px;
+    padding-bottom: 15px;
 }
 
 .dialog-header {
@@ -39,8 +40,7 @@
 
 .dialog-description {
     font-size: 14px;
-    font-family: Roboto Regular;
-    padding-bottom: 24px;
+    padding-bottom: 15px;
     display: flex;
     gap: 12px;
     align-items: center;
@@ -50,16 +50,23 @@
     display: flex;
     justify-content: space-between;
     gap: 8px;
+    border-top: 1px solid rgb(179, 167, 167);
+    padding-top: 15px;
 }
 
 .popup-content__form #textfield__input::placeholder {
     font-size: 14px;
 }
 
+.dialog-icon {
+    flex-shrink: 0;
+}
+
 .dialog-container.warning .dialog-icon {
     background: url("../../assets//icon/Sprites.64af8f61.svg") no-repeat -598px -463px;
 	width: 36px;
 	height: 37px;
+
 }
 
 .dialog-container.info .dialog-icon {
@@ -73,3 +80,4 @@
 	width: 36px;
 	height: 36px;
 }
+

@@ -1,10 +1,10 @@
 <template>
   <BaseDialog
     v-if="isDialogShown"
-    title="Lỗi"
-    :text="`${errorText} không được
-  để trống!`"
-    type="error"
+    align="center"
+    innerAlign="center"
+    :text="errorText"
+    :type="dialogType"
     continueText="OK"
     @continueAction="
       () => {
@@ -16,11 +16,11 @@
 
   <BaseDialog
     v-if="isCloseDialogShown"
-    title="Cảnh báo"
     type="info"
-    :text="ACCOUNTING_TEXT.VI.warningDialog.changeText"
-    cancelText="Không"
-    continueText="Có"
+    align="between"
+    :text="$t('warningDialog.changeText')"
+    :cancelText="$t('words.no')"
+    :continueText="$t('words.yes')"
     @cancelAction="
       () => {
         isCloseDialogShown = false;
@@ -37,14 +37,14 @@
     "
   >
     <div @click="isCloseDialogShown = false">
-      <BaseButton text="Hủy" type="secondary" />
+      <BaseButton :text="$t('words.cancel')" type="secondary" />
     </div>
   </BaseDialog>
 
-  <div class="popup-overlay" @click="closeForm(true)">
-    <div class="popup user-dialog" @click.stop>
+  <div class="popup-overlay">
+    <div class="popup user-dialog" v-trapFocus>
       <div class="popup-top">
-        <EmployeeFormHeader @closeForm="closeForm($event)" :mode="mode" />
+        <EmployeeFormHeader @closeForm="closeForm" :mode="mode" />
         <EmployeeFormBody
           :formInfo="formInfo"
           :isSubmitted="isSubmitted"
@@ -68,11 +68,12 @@ import EmployeeFormBody from "./EmployeeFormBody.vue";
 import EmployeeFormFooter from "./EmployeeFormFooter.vue";
 import { getGeneratedCode } from "@/helpers/api";
 import store from "@/store";
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import { createNewEmployee } from "@/helpers/api";
 import { updateEmployee } from "@/helpers/api";
-import { ACCOUNTING_TEXT, ACCOUNTING_ENUM } from "@/helpers/resources";
-import useFocusTrap from "@/utils/useFocusTrap";
+import { ACCOUNTING_ENUM } from "@/helpers/resources";
+import { showToast } from "@/helpers/constants";
+import { useI18n } from "vue-i18n";
 
 export default {
   name: "EmployeeForm",
@@ -82,28 +83,33 @@ export default {
 
   setup(props, { emit }) {
     //#region state declaration
-    const { trapRef } = useFocusTrap();
+    const { t } = useI18n();
     const formInfo = ref(props?.formDetail?.data || {});
-    const mode = ref(props?.formDetail?.mode || 1);
+    const mode = ref(props?.formDetail?.mode || ACCOUNTING_ENUM.MODE.ADD);
     const isDialogShown = ref(false);
     const isCloseDialogShown = ref(false);
     const errorText = ref("");
+    const dialogType = ref("");
     const isSubmitted = ref(false);
+    let isChanged = false;
 
-    onMounted(async () => {
-      if (mode.value === ACCOUNTING_ENUM.MODE.ADD) {
-        const newEmployeeCode = await getGeneratedCode();
-        formInfo.value = { EmployeeCode: newEmployeeCode };
-      }
-    });
+    // onMounted(async () => {
+    //   if (mode.value === ACCOUNTING_ENUM.MODE.ADD) {
+    //     const newEmployeeCode = await getGeneratedCode();
+    //     formInfo.value = { employeeCode: newEmployeeCode };
+    //   }
+    // });
 
     //#endregion
 
     //#region method declarations
 
-    const closeForm = (e) => {
-      if (e === true) {
-        if (formInfo.value !== props?.formDetail?.data) {
+    const closeForm = () => {
+      if (isChanged) {
+        if (
+          formInfo.value !== props?.formDetail?.data &&
+          Object.values(formInfo.value).some((vl) => vl !== null && vl !== "")
+        ) {
           isCloseDialogShown.value = true;
         } else {
           emit("closeForm");
@@ -121,19 +127,24 @@ export default {
 
     const validateOnSubmit = () => {
       isSubmitted.value = !isSubmitted.value;
-      if (!formInfo.value.EmployeeCode) {
-        errorText.value = "Mã nhân viên";
-        isDialogShown.value = true;
-        return false;
-      } else if (!formInfo.value.FullName) {
-        errorText.value = "Tên";
-        isDialogShown.value = true;
-        return false;
-      } else if (!formInfo.value.DepartmentName) {
-        errorText.value = "Đơn vị";
+      if (!formInfo.value.employeeCode?.trim()) {
+        errorText.value = t("requiredEmployeeCodeError");
+      } else if (!formInfo.value.fullName?.trim()) {
+        errorText.value = t("requiredFullNameError");
+      } else if (!formInfo.value.departmentID?.trim()) {
+        errorText.value = t("requiredDepartmentError");
+      }
+
+      if (
+        !formInfo.value.employeeCode?.trim() ||
+        !formInfo.value.fullName?.trim() ||
+        !formInfo.value.departmentID?.trim()
+      ) {
+        dialogType.value = "error";
         isDialogShown.value = true;
         return false;
       }
+
       return true;
     };
 
@@ -148,17 +159,16 @@ export default {
         store.commit("showLoading");
         try {
           await createNewEmployee(formInfo.value);
+          showToast("success", t("successToast.addEmployee"));
           emit("refreshTable");
           const newEmployeeCode = await getGeneratedCode();
-          formInfo.value = { EmployeeCode: newEmployeeCode };
-          mode.value = 1;
+          formInfo.value = { employeeCode: newEmployeeCode };
+          mode.value = ACCOUNTING_ENUM.MODE.ADD;
         } catch (error) {
-          store.commit("pushToast", {
-            type: "error",
-            text:
-              error.response.data?.userMsg ||
-              ACCOUNTING_TEXT.VI.errorToast.addEmployee,
-          });
+          isDialogShown.value = true;
+          errorText.value = error.response.data.userMsg;
+          dialogType.value =
+            error.response.status === 400 ? "warning" : "error";
         }
         store.commit("hideLoading");
       }
@@ -175,15 +185,20 @@ export default {
         store.commit("showLoading");
         try {
           await createNewEmployee(formInfo.value);
+          showToast("success", t("successToast.addEmployee"));
           emit("refreshTable");
-          closeForm();
+          emit("closeForm");
         } catch (error) {
-          store.commit("pushToast", {
-            type: "error",
-            text:
-              error.response.data?.userMsg ||
-              ACCOUNTING_TEXT.VI.errorToast.addEmployee,
-          });
+          if (error.response.status === 400) {
+            isDialogShown.value = true;
+            errorText.value = error.response.data.userMsg;
+            dialogType.value = "warning";
+          } else {
+            isDialogShown.value = true;
+            errorText.value = error.response.data.userMsg;
+            dialogType.value =
+              error.response.status === 400 ? "warning" : "error";
+          }
         }
         store.commit("hideLoading");
       }
@@ -198,18 +213,23 @@ export default {
     const updateEmployeeAndContinue = async () => {
       store.commit("showLoading");
       try {
-        await updateEmployee(formInfo.value.EmployeeId, formInfo.value);
+        await updateEmployee(formInfo.value.employeeID, formInfo.value);
         const newEmployeeCode = await getGeneratedCode();
-        mode.value = 1;
+        mode.value = ACCOUNTING_ENUM.MODE.ADD;
+        showToast("success", t("successToast.updateEmployee"));
         emit("refreshTable");
-        formInfo.value = { EmployeeCode: newEmployeeCode };
+        formInfo.value = { employeeCode: newEmployeeCode };
       } catch (error) {
-        store.commit("pushToast", {
-          type: "error",
-          text:
-            error.response.data?.userMsg ||
-            ACCOUNTING_TEXT.VI.errorToast.updateEmployee,
-        });
+        if (error.response.status === 400) {
+          isDialogShown.value = true;
+          errorText.value = error.response.data.userMsg;
+          dialogType.value = "warning";
+        } else {
+          isDialogShown.value = true;
+          errorText.value = error.response.data.userMsg;
+          dialogType.value =
+            error.response.status === 400 ? "warning" : "error";
+        }
       }
       store.commit("hideLoading");
     };
@@ -223,16 +243,14 @@ export default {
     const updateEmployeeAndClose = async () => {
       store.commit("showLoading");
       try {
-        await updateEmployee(formInfo.value.EmployeeId, formInfo.value);
+        await updateEmployee(formInfo.value.employeeID, formInfo.value);
+        showToast("success", t("successToast.updateEmployee"));
         emit("refreshTable");
-        closeForm();
+        emit("closeForm");
       } catch (error) {
-        store.commit("pushToast", {
-          type: "error",
-          text:
-            error.response.data?.userMsg ||
-            ACCOUNTING_TEXT.VI.errorToast.updateEmployee,
-        });
+        isDialogShown.value = true;
+        errorText.value = error.response.data.userMsg;
+        dialogType.value = error.response.status === 400 ? "warning" : "error";
       }
       store.commit("hideLoading");
     };
@@ -246,6 +264,7 @@ export default {
      */
 
     const updateInfoState = (data) => {
+      isChanged = true;
       formInfo.value = { ...formInfo.value, ...data };
     };
 
@@ -256,13 +275,12 @@ export default {
     return {
       formInfo,
       mode,
-      trapRef,
       isDialogShown,
       isCloseDialogShown,
       errorText,
       isSubmitted,
       ACCOUNTING_ENUM,
-      ACCOUNTING_TEXT,
+      dialogType,
       closeForm,
       validateOnSubmit,
       createNewEmployeeAndContinue,
